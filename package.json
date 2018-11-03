@@ -1,0 +1,46 @@
+{
+  "name": "lexxx",
+  "version": "1.0.0",
+  "description": "Arbitrage BOT for any cryptocurrencies to any cryptocurrencies",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alersenkevich/lexxx.git"
+  },
+  "keywords": [
+    "arbitrage",
+    "bot",
+    "crypto",
+    "cryptobot",
+    "cryptocurrencies",
+    "bitcoin",
+    "altcoin",
+    "much",
+    "cash",
+    "🙌💰💎💷💶💴💵💸🤔"
+  ],
+  "author": "Aler << LEXXX >> Senkevich",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alersenkevich/lexxx/issues"
+  },
+  "homepage": "https://github.com/alersenkevich/lexxx#readme",
+  "devDependencies": {
+    "@types/mongodb": "^3.1.14",
+    "@types/mongoose": "^5.3.0",
+    "@types/node": "^10.12.2",
+    "@types/node-fetch": "^2.1.2",
+    "nodemon": "^1.18.5",
+    "tslint": "^5.11.0",
+    "tslint-config-airbnb": "^5.11.0",
+    "typescript": "^3.1.6"
+  },
+  "dependencies": {
+    "mongoose": "^5.3.9",
+    "node-fetch": "^2.2.0",
+    "ws": "^6.1.0"
+  }
+}
