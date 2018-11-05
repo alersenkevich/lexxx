@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 export abstract class AbstractSocketEventWrapper extends EventEmitter {
   protected socket: WebSocket = null;
 
-  constructor(protected requestString: string) {
+  constructor() {
     super();
     this.on(
       'newListener',

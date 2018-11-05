@@ -8,8 +8,8 @@ export interface ISocketMessage {
 }
 
 export class BinanceSocketHandler extends AbstractSocketEventWrapper {
-  constructor(requestString: string) {
-    super(requestString);
+  constructor(private requestString: string) {
+    super();
     this.on(
       'newListener',
       (event, listener) => this.initSocket(),
