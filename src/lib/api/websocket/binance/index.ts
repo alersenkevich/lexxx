@@ -1,5 +1,5 @@
 import * as WebSocket from 'ws';
-import { EventEmitter } from 'events';
+import { AbstractSocketEventWrapper } from '../abstract-socket-event-wrapper';
 
 export interface ISocketMessage {
   stream: string;
@@ -7,11 +7,9 @@ export interface ISocketMessage {
   data: any;
 }
 
-export class BinanceSocketHandler extends EventEmitter {
-  private socket: WebSocket = null;
-
-  constructor(private requestString: string) {
-    super();
+export class BinanceSocketHandler extends AbstractSocketEventWrapper {
+  constructor(requestString: string) {
+    super(requestString);
     this.on(
       'newListener',
       (event, listener) => this.initSocket(),
@@ -34,16 +32,5 @@ export class BinanceSocketHandler extends EventEmitter {
       const message: ISocketMessage = JSON.parse(msg);
       this.emit(message.data.e, message);
     });
-  }
-
-  private reconnectSocket(error?: any): void {
-    console.log(error);
-    console.log('trying to reconnect to Binance Socket');
-    this.initSocket();
-  }
-
-  public disableSocket(): void {
-    this.socket.close();
-    this.socket = null;
   }
 }
