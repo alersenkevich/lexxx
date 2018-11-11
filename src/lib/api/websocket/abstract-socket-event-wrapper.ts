@@ -6,17 +6,14 @@ export abstract class AbstractSocketEventWrapper extends EventEmitter {
 
   constructor() {
     super();
-    this.on(
-      'newListener',
-      (event, listener) => this.initSocket(),
-    );
+    this.on('newListener', (event, listener) => this.initSocket());
   }
 
   public abstract initSocket(): void;
 
   public reconnectSocket(error?: any): void {
     console.log(error);
-    console.log('trying to reconnect to Binance Socket');
+    console.log('trying to reconnect to Socket');
     this.initSocket();
   }
 

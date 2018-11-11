@@ -169,7 +169,6 @@ export interface IWithdrawHistory {
   }[];
 }
 
-
 export class BinanceApiWrapper extends AbstractApiWrapper {
   constructor(protected config: APIConnectionConfig) {
     super();
@@ -242,7 +241,6 @@ export class BinanceApiWrapper extends AbstractApiWrapper {
     return await this.get<{ withdrawFee: string, success: boolean }[]>({ action: 'wapi/v3/withdrawFee', payload: { ...params } }, true);
   }
 
-
   protected async request <T>(data: APIRequest): Promise<T> {
     try {
       const { method, access, payload, action } = data;
@@ -275,7 +273,6 @@ export class BinanceApiWrapper extends AbstractApiWrapper {
 
       const responseObject = await response.json();
 
-
       return responseObject;
 
     } catch (error) {
@@ -289,7 +286,6 @@ export class BinanceApiWrapper extends AbstractApiWrapper {
       .update(payloadString)
       .digest('hex');
   }
-
 }
 
 export const apiInit = (config: APIConnectionConfig) => new BinanceApiWrapper(config);

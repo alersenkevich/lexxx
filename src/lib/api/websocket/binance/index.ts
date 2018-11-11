@@ -1,6 +1,60 @@
 import * as WebSocket from 'ws';
 import { AbstractSocketEventWrapper } from '../abstract-socket-event-wrapper';
 
+const converterValues = {
+  aggTrade: {
+    p: 'price',
+    s: 'symbol',
+    M: 'ignore',
+    q: 'quantity',
+    e: 'eventType',
+    E: 'eventTime',
+    T: 'tradeTime',
+    l: 'lastTradeId',
+    f: 'firstTradeId',
+    m: 'isMarketMaker',
+    a: 'aggregateTradeId',
+  },
+  trade: {
+    p: 'price',
+    s: 'symbol',
+    M: 'ignore',
+    t: 'tradeId',
+    q: 'quantity',
+    e: 'eventType',
+    E: 'eventTime',
+    T: 'tradeTime',
+    b: 'buyerOrderId',
+    a: 'sellerOrderId',
+    m: 'isMarketMaker',
+  },
+  '24hrTicker': {
+    e: 'eventType',
+    E: 'eventTime',
+    s: 'symbol',
+    p: 'priceChange',
+    P: 'priceChangePercent',
+    w: 'weightedAveragePrice',
+    x: 'previousDayClosePrice',
+    c: 'currentDayClosePrice',
+    Q: 'closeTradeQuantity',
+    b: 'bestBidPrice',
+    B: 'bestBidQuantity',
+    a: 'bestAskPrice',
+    A: 'bestAskQuantity',
+    o: 'openPrice',
+    h: 'highPrice',
+    l: 'lowPrice',
+    v: 'totalTradedBaseAssetVolume',
+    q: 'totalTradedQuoteAssetVolume',
+    O: 'statisticsOpenTime',
+    C: 'statisticsCloseTime',
+    F: 'firstTradeId',
+    L: 'lastTradeId',
+    n: 'totalNumberOfTrades',
+  },
+};
+
 export interface IAggregatedSymbolTrades {
   e: 'aggTrade';    // Event type
   E: number;        // Event time
@@ -94,13 +148,18 @@ export interface IMiniTicker {
 }
 
 export interface ISocketMessage {
-  stream: string;
   e?: string;
-  data: any;
+  stream: string;
+  data: IAggregatedSymbolTrades | IKline | IMiniTicker | ITrade | ITicker;
 }
 
 export class BinanceSocketHandler extends AbstractSocketEventWrapper {
-  constructor(private requestString: string) { super(); }
+  constructor(private requestString: string =
+    'btcusdt@aggTrade/btcusdt@trade/btcusdt@kline_1d/btcusdt@miniTicker/btcusdt@ticker',
+  ) {
+    super();
+    this.initSocket();
+  }
 
   public initSocket(): void {
     if (this.socket !== null) this.disableSocket();
@@ -113,9 +172,11 @@ export class BinanceSocketHandler extends AbstractSocketEventWrapper {
     this.socket.on('unexpected-response', this.reconnectSocket);
   }
 
-  private initMessagesHandling(): void {
+  private initMessagesHandling = (): void => {
+    console.log('here');
     this.socket.on('message', async (msg: string) => {
       const message: ISocketMessage = JSON.parse(msg);
+      console.log('------------->>>>> event: ', message.data.e, message, '\n');
       this.emit(message.data.e, message);
     });
   }
