@@ -1,5 +1,7 @@
 import * as WebSocket from 'ws';
+import { exchangesSettings } from '../../../../config';
 import { AbstractSocketEventWrapper } from '../abstract-socket-event-wrapper';
+import { convertObjectPropertiesNames } from '../../../helpers';
 
 const converterValues = {
   aggTrade: {
@@ -145,11 +147,11 @@ export interface ITicker {
   totalNumberOfTrades:        number;
 }
 
-export interface IKline {
-  stream:             string;
-  eventType:         'kline';
-  eventTime:          number;
-  symbol:             string;
+export interface IKline extends { e?: string } {
+  stream:                     string;
+  eventType:                 'kline';
+  eventTime:                  number;
+  symbol:                     string;
   kline: {
     klineStartTime:           number;
     klineCloseTime:           number;
@@ -189,10 +191,12 @@ export interface ISocketMessage {
   data: IAggregatedSymbolTrades | IKline | IMiniTicker | ITrade | ITicker;
 }
 
+/** private requestString: string =
+    '?streams=btcusdt@aggTrade/btcusdt@trade/btcusdt@kline_1d/btcusdt@miniTicker/btcusdt@ticker', */
+
 export class BinanceSocketHandler extends AbstractSocketEventWrapper {
-  constructor(private requestString: string =
-    'btcusdt@aggTrade/btcusdt@trade/btcusdt@kline_1d/btcusdt@miniTicker/btcusdt@ticker',
-  ) {
+  public title: string = 'binance';
+  constructor() {
     super();
     this.initSocket();
   }
@@ -201,7 +205,7 @@ export class BinanceSocketHandler extends AbstractSocketEventWrapper {
     if (this.socket !== null) this.disableSocket();
 
     this.socket = new WebSocket(
-      `wss://stream.binance.com:9443/stream?streams=${this.requestString}`,
+      exchangesSettings.binance.socket.url, /* + this.requestString */
     );
     this.socket.on('open', this.initMessagesHandling);
     this.socket.on('error', this.reconnectSocket);
