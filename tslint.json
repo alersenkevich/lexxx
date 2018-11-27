@@ -8,6 +8,8 @@
     "import-name": [
       false
     ],
-    "variable-name": [false]
+    "variable-name": [false],
+    "no-boolean-literal-compare":false,
+    "prefer-template": [true, "allow-single-concat"]
   }
 }

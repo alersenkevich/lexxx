@@ -1,7 +1,9 @@
 import * as WebSocket from 'ws';
-import { exchangesSettings } from '../../../../config';
+import { convertObjectPropertiesNames as convert } from '../../../helpers';
 import { AbstractSocketEventWrapper } from '../abstract-socket-event-wrapper';
-import { convertObjectPropertiesNames } from '../../../helpers';
+import {
+  exchangesSettings, exchangesCoinsTickers as tickers, products, bases,
+} from '../../../../config';
 
 const converterValues = {
   aggTrade: {
@@ -147,7 +149,7 @@ export interface ITicker {
   totalNumberOfTrades:        number;
 }
 
-export interface IKline extends { e?: string } {
+export interface IKline {
   stream:                     string;
   eventType:                 'kline';
   eventTime:                  number;
@@ -191,33 +193,39 @@ export interface ISocketMessage {
   data: IAggregatedSymbolTrades | IKline | IMiniTicker | ITrade | ITicker;
 }
 
-/** private requestString: string =
-    '?streams=btcusdt@aggTrade/btcusdt@trade/btcusdt@kline_1d/btcusdt@miniTicker/btcusdt@ticker', */
-
 export class BinanceSocketHandler extends AbstractSocketEventWrapper {
   public title: string = 'binance';
-  constructor() {
-    super();
-    this.initSocket();
-  }
 
-  public initSocket(): void {
+  constructor() { super(); this.initSocket(); }
+
+  public async initSocket(): Promise<void> {
+    // Turn off the socket if was on earlier or if we switch-reset socket from other place
     if (this.socket !== null) this.disableSocket();
+    // Get socket url and/or other options
+    const { url } = exchangesSettings.binance.socket;
+    // Generate request binance socket string for streams
+    const requestString = await this.generateRequestString(products, bases, 'ticker');
 
-    this.socket = new WebSocket(
-      exchangesSettings.binance.socket.url, /* + this.requestString */
-    );
+    this.socket = new WebSocket(`${url}?streams=${requestString}`);
+    this.socket.on('unexpected-response', this.reconnectSocket);
     this.socket.on('open', this.initMessagesHandling);
     this.socket.on('error', this.reconnectSocket);
-    this.socket.on('unexpected-response', this.reconnectSocket);
   }
 
   private initMessagesHandling = (): void => {
-    console.log('here');
     this.socket.on('message', async (msg: string) => {
-      const message: ISocketMessage = JSON.parse(msg);
-      console.log('------------->>>>> event: ', message.data.e, message, '\n');
-      this.emit(message.data.e, message);
+      const { data, data: { e } } = JSON.parse(msg);
+      const message = await convert<ITicker>(data, converterValues[e]);
+      this.emit(message.eventType, message);
     });
+  }
+
+  private async generateRequestString(products: string[], bases: string[], event: string): Promise<string> {
+    return (await Promise.all(products.map(
+      product => Promise.all(bases.map(base => base !== product
+          ? tickers.global[product] + tickers[base === 'tether' ? 'binance' : 'global'][base]
+          : null,
+      )),
+    ))).reduce((acc, val) => [...acc, ...val], []).filter(v => v !== null).join(`@${event}/`) + `@${event}`;
   }
 }

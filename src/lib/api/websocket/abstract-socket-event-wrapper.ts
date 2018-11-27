@@ -10,13 +10,13 @@ export abstract class AbstractSocketEventWrapper extends EventEmitter {
     this.on('newListener', (event, listener) => this.initSocket());
   }
 
-  public reconnectSocket(error?: any): void {
+  public reconnectSocket = (error?: any): void => {
     console.log(error);
     console.log('trying to reconnect to Socket');
     this.initSocket();
   }
 
-  public disableSocket(): void {
+  public disableSocket = (): void => {
     this.socket.close();
     this.socket = null;
   }
