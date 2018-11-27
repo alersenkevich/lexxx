@@ -1,4 +1,4 @@
-import { BinanceSocketHandler } from '../lib/api/websocket/binance';
+import { BinanceSocketHandler, ITicker } from '../lib/api/websocket/binance';
 import { Mongoose } from 'mongoose';
 import {
   gracefulExit,
@@ -15,4 +15,5 @@ export const bootstrap = (mongoose: Mongoose) => {
 
   // Runing factories and some else application boot stuff
   const binanceSocketHandler = new BinanceSocketHandler();
+  binanceSocketHandler.on('24hrTicker', (ticker: ITicker) => console.log());
 };
