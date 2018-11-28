@@ -15,9 +15,9 @@ export const convertObjectPropertiesNames = async <T>(
 ): Promise<T> => {
   const resultObject = {};
 
-  await Promise.all(Object.entries(object).map(([propName, value]) => typeof namesSubstitutes[propName] === 'string'
+  await Promise.all(Object.entries(object).map(async ([propName, value]) => typeof namesSubstitutes[propName] === 'string'
     ? resultObject[namesSubstitutes[propName]] = value
-    : resultObject[namesSubstitutes[propName].parentPropName] = convertObjectPropertiesNames(
+    : resultObject[namesSubstitutes[propName].parentPropName] = await convertObjectPropertiesNames(
       value, namesSubstitutes[propName],
     ),
   ));

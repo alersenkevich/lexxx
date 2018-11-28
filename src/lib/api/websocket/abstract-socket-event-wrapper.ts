@@ -5,10 +5,7 @@ export abstract class AbstractSocketEventWrapper extends EventEmitter {
   protected socket: WebSocket = null;
   public abstract initSocket(): void;
 
-  constructor() {
-    super();
-    this.on('newListener', (event, listener) => this.initSocket());
-  }
+  constructor() { super(); }
 
   public reconnectSocket = (error?: any): void => {
     console.log(error);

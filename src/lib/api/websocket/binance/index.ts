@@ -1,9 +1,7 @@
 import * as WebSocket from 'ws';
 import { convertObjectPropertiesNames as convert } from '../../../helpers';
 import { AbstractSocketEventWrapper } from '../abstract-socket-event-wrapper';
-import {
-  exchangesSettings, exchangesCoinsTickers as tickers, products, bases,
-} from '../../../../config';
+import { exchangesSettings, exchangesCoinsTickers as tickers } from '../../../../config';
 
 const converterValues = {
   aggTrade: {
@@ -196,7 +194,10 @@ export interface ISocketMessage {
 export class BinanceSocketHandler extends AbstractSocketEventWrapper {
   public title: string = 'binance';
 
-  constructor() { super(); this.initSocket(); }
+  constructor(private products: string[], private bases: string[], private actions: string[]) {
+    super();
+    this.initSocket();
+  }
 
   public async initSocket(): Promise<void> {
     // Turn off the socket if was on earlier or if we switch-reset socket from other place
@@ -204,7 +205,7 @@ export class BinanceSocketHandler extends AbstractSocketEventWrapper {
     // Get socket url and/or other options
     const { url } = exchangesSettings.binance.socket;
     // Generate request binance socket string for streams
-    const requestString = await this.generateRequestString(products, bases, 'ticker');
+    const requestString = await this.generateRequestString(this.products, this.bases, this.actions);
 
     this.socket = new WebSocket(`${url}?streams=${requestString}`);
     this.socket.on('unexpected-response', this.reconnectSocket);
@@ -220,12 +221,16 @@ export class BinanceSocketHandler extends AbstractSocketEventWrapper {
     });
   }
 
-  private async generateRequestString(products: string[], bases: string[], event: string): Promise<string> {
-    return (await Promise.all(products.map(
+  private async generateRequestString(products: string[], bases: string[], actions: string[]): Promise<string> {
+    const symbols = (await Promise.all(products.map(
       product => Promise.all(bases.map(base => base !== product
           ? tickers.global[product] + tickers[base === 'tether' ? 'binance' : 'global'][base]
           : null,
       )),
-    ))).reduce((acc, val) => [...acc, ...val], []).filter(v => v !== null).join(`@${event}/`) + `@${event}`;
+    ))).reduce((acc, val) => [...acc, ...val], []).filter(v => v !== null);
+
+    return (await Promise.all(symbols.map(
+      symbol => actions.reduce((acc, action) => `${symbol}@${action}/${acc}`, ''),
+    ))).join('').slice(0, -1);
   }
 }
