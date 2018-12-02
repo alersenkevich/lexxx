@@ -54,6 +54,6 @@ export class HitBtcSocketHandler extends AbstractSocketEventWrapper {
   }
 
   public unsubscribeTicker(symbol: string) {
-    this.makeRequest({ method: 'subscribeTicker', params: { symbol } });
+    this.makeRequest({ method: 'unsubscribeTicker', params: { symbol } });
   }
 }
