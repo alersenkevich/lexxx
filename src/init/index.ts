@@ -6,6 +6,7 @@ import {
   uncaughtException,
   unhandledRejection,
 } from '../lib/helpers';
+import { HitBtcSocketHandler } from '../lib/api/websocket/hitbtc';
 
 export const bootstrap = (mongoose: Mongoose) => {
   process
@@ -15,7 +16,8 @@ export const bootstrap = (mongoose: Mongoose) => {
     .on('SIGTERM', gracefulExit(mongoose.connection));
 
   // Runing factories and some else application boot stuff
-
-  const binanceSocketHandler = new BinanceSocketHandler(products, bases, ['ticker', 'kline_1m']);
-  binanceSocketHandler.on('24hrTicker', ticker => console.log(ticker));
+/*
+  const binanceSocketHandler = new BinanceSocketHandler(products, bases, ['ticker']);
+  binanceSocketHandler.on('24hrTicker', ticker => console.log(ticker)); */
+  const hitbtcSocketHandler = new HitBtcSocketHandler(products, bases);
 };

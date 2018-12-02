@@ -8,6 +8,9 @@ export const exchangesSettings = {
   binance: {
     socket: { url: 'wss://stream.binance.com:9443/stream' },
   },
+  hitbtc: {
+    socket: { url: 'wss://api.hitbtc.com/api/2/ws' },
+  },
 };
 export const exchangesCoinsTickers = {
   global: {
