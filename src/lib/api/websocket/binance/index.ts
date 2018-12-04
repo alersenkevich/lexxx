@@ -213,7 +213,7 @@ export class BinanceSocketHandler extends AbstractSocketEventWrapper {
     this.socket.on('error', this.reconnectSocket);
   }
 
-  private initMessagesHandling = (): void => {
+  protected initMessagesHandling = (): void => {
     this.socket.on('message', async (msg: string) => {
       const { data, data: { e } } = JSON.parse(msg);
       const message = await convert<ISocketMessage['data']>(data, converterValues[e]);

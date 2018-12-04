@@ -36,14 +36,11 @@ export class HitBtcSocketHandler extends AbstractSocketEventWrapper {
     this.socket.send(JSON.stringify({ ...data, id: (new Date).getTime() }));
   }
 
-  private initMessagesHandling = (): void => {
+  protected initMessagesHandling = (): void => {
     this.socket.on('message', (msg: string) => {
       const message = JSON.parse(msg);
 
-      if (message.error) {
-        console.log(message.error.message, '\n', message.error.description);
-        return;
-      }
+      if (message.error) return console.log(message.error.message, '\n', message.error.description);
 
       this.emit(message.method, message.response ? message.response : message.params);
     });
