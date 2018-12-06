@@ -42,7 +42,7 @@ export class HitBtcSocketHandler extends AbstractSocketEventWrapper {
 
       if (message.error) return console.log(message.error.message, '\n', message.error.description);
 
-      this.emit(message.method, message.response ? message.response : message.params);
+      this.emit(message.method, message.result ? message.result : message.params);
     });
   }
 
