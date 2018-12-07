@@ -39,7 +39,7 @@ export class ProviderSocket extends EventEmitter {
     ];
   }
 
-  private prepareMessage = (method: string, message: any) => JSON.stringify({
+  private prepareMessage = (method: string, message: any): string => JSON.stringify({
     method, params: message, id: (new Date).getTime(),
   })
 

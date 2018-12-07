@@ -15,11 +15,11 @@ export const convertObjectPropertiesNames = async <T>(
 ): Promise<T> => {
   const resultObject = {};
 
-  await Promise.all(Object.entries(object).map(async ([propName, value]) => typeof namesSubstitutes[propName] === 'string'
-    ? resultObject[namesSubstitutes[propName]] = value
-    : resultObject[namesSubstitutes[propName].parentPropName] = await convertObjectPropertiesNames(
-      value, namesSubstitutes[propName],
-    ),
+  await Promise.all(Object.entries(object).map(
+    async ([propName, value]): Promise<void> => typeof namesSubstitutes[propName] === 'string'
+      ? resultObject[namesSubstitutes[propName]] = value
+      : resultObject[namesSubstitutes[propName].parentPropName] =
+        await convertObjectPropertiesNames(value, namesSubstitutes[propName]),
   ));
 
   return resultObject as T;

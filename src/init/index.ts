@@ -1,12 +1,8 @@
 import { Mongoose } from 'mongoose';
 import { products, bases } from '../config';
-import { BinanceSocketHandler, ITicker } from '../lib/api/websocket/binance';
 import { HitBtcSocketHandler } from '../lib/api/websocket/hitbtc';
-import {
-  gracefulExit,
-  uncaughtException,
-  unhandledRejection,
-} from '../lib/helpers';
+import { BinanceSocketHandler, ITicker } from '../lib/api/websocket/binance';
+import { gracefulExit, uncaughtException, unhandledRejection } from '../lib/helpers';
 
 export const bootstrap = (mongoose: Mongoose) => {
   process
